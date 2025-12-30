@@ -1,0 +1,8 @@
+.react-resizable-handle {
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  border-radius: 3px;
+  bottom: 0;
+  right: 0;
+}
