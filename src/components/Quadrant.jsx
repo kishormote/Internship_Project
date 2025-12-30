@@ -23,6 +23,7 @@ const styles = {
   },
   content: {
     flex: 1,
+      minHeight: 0,  
   },
 };
 

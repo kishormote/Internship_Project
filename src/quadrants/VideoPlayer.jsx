@@ -1,16 +1,12 @@
-import ReactPlayer from "react-player";
-
 function VideoPlayer() {
   return (
-    <div style={{ height: "100%" }}>
-      <ReactPlayer
-        url="https://www.youtube.com/watch?v=Xe8CkYZvCig"
-        width="100%"
-        height="100%"
-        controls
-      />
-    </div>
+    <video
+      src="/test.mp4"
+      controls
+      style={{ width: "100%", height: "100%" }}
+    />
   );
 }
 
 export default VideoPlayer;
+

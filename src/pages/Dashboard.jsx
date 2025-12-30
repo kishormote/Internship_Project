@@ -65,11 +65,11 @@ function Dashboard() {
         <Quadrant title="Whiteboard" />
       </div>
 
-      <div key="q3">
-        <Quadrant title="Video Lesson">
-          <VideoPlayer />
-        </Quadrant>
-      </div>
+     <div key="q3" style={{ height: "100%" }}>
+  <Quadrant title="Video Lesson">
+    <VideoPlayer />
+  </Quadrant>
+</div>
 
       <div key="q4">
         <Quadrant title="PDF / Book" />
