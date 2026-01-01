@@ -11,10 +11,14 @@ import Whiteboard from "../quadrants/Whiteboard";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import PDFViewer from "../quadrants/PDFViewer";
+
 
 function Dashboard() {
   const containerRef = useRef(null);
   const [rowHeight, setRowHeight] = useState(100);
+const [zoomed, setZoomed] = useState(null);
+
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -58,41 +62,56 @@ function Dashboard() {
         <LessonSidebar />
 
         <div style={styles.content}>
-          <div
-            ref={containerRef}
-            style={{ width: "100%", height: "calc(100vh - 120px)" }}
-          >
-            <GridLayout
-              layout={layout}
-              cols={12}
-              rowHeight={rowHeight}
-              width={containerRef.current?.clientWidth || 1200}
-              isDraggable={false}
-              isResizable={false}
-              margin={[10, 10]}
-              containerPadding={[10, 10]}
-            >
-              <div key="q1">
-                <Quadrant title="Zoom Live Class" />
-              </div>
-              <div key="q2">
-               <Quadrant title="Whiteboard">
-  <div style={{ height: "100%", width: "100%" }}>
-    <Whiteboard />
-  </div>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: zoomed ? "1fr" : "1fr 1fr",
+      gridTemplateRows: zoomed ? "1fr" : "1fr 1fr",
+      gap: "10px",
+      width: "100%",
+      height: "100%",
+    }}
+  >
+    {(!zoomed || zoomed === "q1") && (
+      <Quadrant
+        title="Zoom Live Class"
+        isZoomed={zoomed === "q1"}
+        onZoom={() => setZoomed(zoomed === "q1" ? null : "q1")}
+      />
+    )}
+
+    {(!zoomed || zoomed === "q2") && (
+      <Quadrant
+        title="Whiteboard"
+        isZoomed={zoomed === "q2"}
+        onZoom={() => setZoomed(zoomed === "q2" ? null : "q2")}
+      >
+        <Whiteboard />
+      </Quadrant>
+    )}
+
+    {(!zoomed || zoomed === "q3") && (
+      <Quadrant
+        title="Video Lesson"
+        isZoomed={zoomed === "q3"}
+        onZoom={() => setZoomed(zoomed === "q3" ? null : "q3")}
+      >
+        <VideoPlayer />
+      </Quadrant>
+    )}
+
+    {(!zoomed || zoomed === "q4") && (
+      <Quadrant
+  title="PDF / Book"
+  isZoomed={zoomed === "q4"}
+  onZoom={() => setZoomed(zoomed === "q4" ? null : "q4")}
+>
+  <PDFViewer />
 </Quadrant>
-              </div>
-              <div key="q3">
-                <Quadrant title="Video Lesson">
-                  <VideoPlayer />
-                </Quadrant>
-              </div>
-              <div key="q4">
-                <Quadrant title="PDF / Book" />
-              </div>
-            </GridLayout>
-          </div>
-        </div>
+    )}
+  </div>
+</div>
+
       </div>
 
       <ReinforcementMeter />
