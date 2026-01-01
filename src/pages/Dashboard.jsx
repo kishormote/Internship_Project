@@ -11,6 +11,8 @@ import Whiteboard from "../quadrants/Whiteboard";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import PDFViewer from "../quadrants/PDFViewer";
+
 
 function Dashboard() {
   const containerRef = useRef(null);
@@ -100,10 +102,12 @@ const [zoomed, setZoomed] = useState(null);
 
     {(!zoomed || zoomed === "q4") && (
       <Quadrant
-        title="PDF / Book"
-        isZoomed={zoomed === "q4"}
-        onZoom={() => setZoomed(zoomed === "q4" ? null : "q4")}
-      />
+  title="PDF / Book"
+  isZoomed={zoomed === "q4"}
+  onZoom={() => setZoomed(zoomed === "q4" ? null : "q4")}
+>
+  <PDFViewer />
+</Quadrant>
     )}
   </div>
 </div>

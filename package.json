@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "konva": "^10.0.12",
+    "pdfjs-dist": "^5.4.296",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-grid-layout": "^2.1.1",
     "react-konva": "^19.2.1",
+    "react-pdf": "^10.3.0",
     "react-player": "^3.4.0",
     "react-resizable": "^3.0.5"
   },
