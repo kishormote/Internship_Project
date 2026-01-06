@@ -18,7 +18,8 @@
     "react-konva": "^19.2.1",
     "react-pdf": "^10.3.0",
     "react-player": "^3.4.0",
-    "react-resizable": "^3.0.5"
+    "react-resizable": "^3.0.5",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
