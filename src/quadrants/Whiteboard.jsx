@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import socket from "../socket";
 
-function Whiteboard() {
+function Whiteboard({ zoomed }) {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const drawing = useRef(false);
@@ -23,18 +23,17 @@ function Whiteboard() {
   };
 
   useEffect(() => {
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
 
-    socket.on("draw", (data) => {
-      drawLine(data.x0, data.y0, data.x1, data.y1, false);
-    });
+  socket.on("draw", (data) => {
+    drawLine(data.x0, data.y0, data.x1, data.y1, false);
+  });
 
-    return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      socket.off("draw");
-    };
-  }, []);
+  return () => {
+    socket.off("draw");
+  };
+}, [zoomed]); // 🔥 RUN WHEN ZOOM CHANGES
+
 
   const drawLine = (x0, y0, x1, y1, emit) => {
     const ctx = ctxRef.current;

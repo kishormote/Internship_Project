@@ -47,7 +47,8 @@ function Dashboard() {
                 isZoomed={zoomed === "q2"}
                 onZoom={() => setZoomed(zoomed === "q2" ? null : "q2")}
               >
-                <Whiteboard />
+                <Whiteboard zoomed={zoomed === "q2"} />
+
               </Quadrant>
             )}
 
