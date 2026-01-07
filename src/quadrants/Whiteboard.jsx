@@ -7,7 +7,8 @@ function Whiteboard() {
   const drawing = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
 
-  useEffect(() => {
+  // Resize canvas to parent
+  const resizeCanvas = () => {
     const canvas = canvasRef.current;
     const parent = canvas.parentElement;
 
@@ -19,12 +20,20 @@ function Whiteboard() {
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctxRef.current = ctx;
+  };
+
+  useEffect(() => {
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     socket.on("draw", (data) => {
       drawLine(data.x0, data.y0, data.x1, data.y1, false);
     });
 
-    return () => socket.off("draw");
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      socket.off("draw");
+    };
   }, []);
 
   const drawLine = (x0, y0, x1, y1, emit) => {
@@ -49,7 +58,13 @@ function Whiteboard() {
   return (
     <canvas
       ref={canvasRef}
-      style={{ width: "100%", height: "100%", cursor: "crosshair" }}
+      style={{
+        width: "100%",
+        height: "100%",
+        background: "white",
+        cursor: "crosshair",
+        display: "block",
+      }}
       onMouseDown={(e) => {
         drawing.current = true;
         lastPos.current = getPos(e);
