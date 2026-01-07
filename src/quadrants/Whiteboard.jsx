@@ -1,91 +1,89 @@
-import { Stage, Layer, Line } from "react-konva";
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
+import socket from "../socket";
 
 function Whiteboard() {
-  const [lines, setLines] = useState([]);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const stageRef = useRef(null);
-  const containerRef = useRef(null);
+  const canvasRef = useRef(null);
+  const ctxRef = useRef(null);
+  const drawing = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
 
-  const [size, setSize] = useState({ width: 0, height: 0 });
+  // Resize canvas to parent
+  const resizeCanvas = () => {
+    const canvas = canvasRef.current;
+    const parent = canvas.parentElement;
+
+    canvas.width = parent.clientWidth;
+    canvas.height = parent.clientHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctxRef.current = ctx;
+  };
 
   useEffect(() => {
-    if (containerRef.current) {
-      setSize({
-        width: containerRef.current.clientWidth,
-        height: containerRef.current.clientHeight,
-      });
-    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    socket.on("draw", (data) => {
+      drawLine(data.x0, data.y0, data.x1, data.y1, false);
+    });
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      socket.off("draw");
+    };
   }, []);
 
-  const handleMouseDown = (e) => {
-    setIsDrawing(true);
-    const pos = e.target.getStage().getPointerPosition();
-    setLines([...lines, { points: [pos.x, pos.y] }]);
+  const drawLine = (x0, y0, x1, y1, emit) => {
+    const ctx = ctxRef.current;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+    ctx.closePath();
+
+    if (emit) socket.emit("draw", { x0, y0, x1, y1 });
   };
 
-  const handleMouseMove = (e) => {
-    if (!isDrawing) return;
-    const stage = e.target.getStage();
-    const point = stage.getPointerPosition();
-    let lastLine = lines[lines.length - 1];
-    lastLine.points = lastLine.points.concat([point.x, point.y]);
-    lines.splice(lines.length - 1, 1, lastLine);
-    setLines(lines.concat());
-  };
-
-  const handleMouseUp = () => {
-    setIsDrawing(false);
-  };
-
-  // Clear all lines
-  const handleClear = () => {
-    setLines([]);
+  const getPos = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
   };
 
   return (
-    <div
-      ref={containerRef}
-      style={{ width: "100%", height: "100%", position: "relative" }}
-    >
-      {/* Clear Button */}
-      <button
-        onClick={handleClear}
-        style={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          zIndex: 10,
-          padding: "4px 8px",
-          fontSize: "12px",
-          cursor: "pointer",
-        }}
-      >
-        Clear
-      </button>
-
-      <Stage
-        width={size.width}
-        height={size.height}
-        ref={stageRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      >
-        <Layer>
-          {lines.map((line, i) => (
-            <Line
-              key={i}
-              points={line.points}
-              stroke="black"
-              strokeWidth={2}
-              tension={0.5}
-              lineCap="round"
-            />
-          ))}
-        </Layer>
-      </Stage>
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{
+        width: "100%",
+        height: "100%",
+        background: "white",
+        cursor: "crosshair",
+        display: "block",
+      }}
+      onMouseDown={(e) => {
+        drawing.current = true;
+        lastPos.current = getPos(e);
+      }}
+      onMouseMove={(e) => {
+        if (!drawing.current) return;
+        const pos = getPos(e);
+        drawLine(
+          lastPos.current.x,
+          lastPos.current.y,
+          pos.x,
+          pos.y,
+          true
+        );
+        lastPos.current = pos;
+      }}
+      onMouseUp={() => (drawing.current = false)}
+      onMouseLeave={() => (drawing.current = false)}
+    />
   );
 }
 

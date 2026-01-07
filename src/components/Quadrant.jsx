@@ -5,11 +5,13 @@ function Quadrant({ title, children, onZoom, isZoomed }) {
         <span>{title}</span>
 
         <button onClick={onZoom} style={styles.zoomBtn}>
-          {isZoomed ? "⤢" : "⤢"}
+          ⤢
         </button>
       </div>
 
-      <div style={styles.content}>{children}</div>
+      <div style={styles.content}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -22,6 +24,7 @@ const styles = {
     flexDirection: "column",
     border: "1px solid #ccc",
     background: "#fff",
+    overflow: "hidden",
   },
   header: {
     display: "flex",
@@ -42,6 +45,7 @@ const styles = {
     flex: 1,
     minHeight: 0,
     position: "relative",
+    overflow: "hidden",
   },
 };
 
